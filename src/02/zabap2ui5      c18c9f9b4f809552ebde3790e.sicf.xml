@@ -12,6 +12,12 @@
     <ICF_LANGU>E</ICF_LANGU>
     <ICF_DOCU>abap2UI5</ICF_DOCU>
    </ICFDOCU>
+   <ICFDOCU_ADDITIONAL_LANGUAGES>
+    <item>
+     <ICF_LANGU>D</ICF_LANGU>
+     <ICF_DOCU>abap2UI5</ICF_DOCU>
+    </item>
+   </ICFDOCU_ADDITIONAL_LANGUAGES>
   </asx:values>
  </asx:abap>
 </abapGit>

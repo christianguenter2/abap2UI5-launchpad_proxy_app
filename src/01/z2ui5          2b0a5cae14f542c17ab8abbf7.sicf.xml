@@ -20,6 +20,12 @@
      <ICFHANDLER>Z2UI5_CL_LAUNCHPAD_HANDLER</ICFHANDLER>
     </ICFHANDLER>
    </ICFHANDLER_TABLE>
+   <ICFDOCU_ADDITIONAL_LANGUAGES>
+    <item>
+     <ICF_LANGU>D</ICF_LANGU>
+     <ICF_DOCU>abap2UI5 - Launchpad HTTP Service</ICF_DOCU>
+    </item>
+   </ICFDOCU_ADDITIONAL_LANGUAGES>
   </asx:values>
  </asx:abap>
 </abapGit>
