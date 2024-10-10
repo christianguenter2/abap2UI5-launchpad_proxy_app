@@ -1,8 +1,8 @@
-CLASS zzzyyy_cl_lp_sample_04 DEFINITION PUBLIC.
+CLASS z2ui6_cl_lp_sample_04 DEFINITION PUBLIC.
 
   PUBLIC SECTION.
 
-    INTERFACES zzzyyy_if_app.
+    INTERFACES z2ui6_if_app.
 
     DATA product  TYPE string.
     DATA product_url  TYPE string.
@@ -16,13 +16,13 @@ ENDCLASS.
 
 
 
-CLASS zzzyyy_cl_lp_sample_04 IMPLEMENTATION.
+CLASS z2ui6_cl_lp_sample_04 IMPLEMENTATION.
 
 
-  METHOD zzzyyy_if_app~main.
+  METHOD z2ui6_if_app~main.
 
-    DATA(view) = zzzyyy_cl_xml_view=>factory( ).
-    product_url = zzzyyy_cl_util=>url_param_get(
+    DATA(view) = z2ui6_cl_xml_view=>factory( ).
+    product_url = z2ui6_cl_util=>url_param_get(
                     val =  `product`
                     url = client->get( )-s_config-search ).
     check_launchpad_active = client->get( )-check_launchpad_active.
@@ -62,7 +62,7 @@ CLASS zzzyyy_cl_lp_sample_04 IMPLEMENTATION.
                             text  = 'go to app 127'
                             press = client->_event_client(
             val    = client->cs_event-cross_app_nav_to_ext
-            t_arg  = VALUE #( ( `{ semanticObject: "ZZZYYY_CL_LP_SAMPLE_03",  action: "display" }` ) ( `{ ProductID : "123234" }`) )
+            t_arg  = VALUE #( ( `{ semanticObject: "Z2UI6_CL_LP_SAMPLE_03",  action: "display" }` ) ( `{ ProductID : "123234" }`) )
         )
              )->stringify( ) ).
 

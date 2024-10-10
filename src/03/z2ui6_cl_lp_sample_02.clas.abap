@@ -1,7 +1,7 @@
-CLASS zzzyyy_cl_lp_sample_02 DEFINITION PUBLIC.
+CLASS z2ui6_cl_lp_sample_02 DEFINITION PUBLIC.
 
   PUBLIC SECTION.
-    INTERFACES zzzyyy_if_app.
+    INTERFACES z2ui6_if_app.
 
     DATA mv_title          TYPE string VALUE `my title`.
     DATA check_initialized TYPE abap_bool.
@@ -13,10 +13,10 @@ ENDCLASS.
 
 
 
-CLASS ZZZYYY_CL_LP_SAMPLE_02 IMPLEMENTATION.
+CLASS Z2UI6_CL_LP_SAMPLE_02 IMPLEMENTATION.
 
 
-  METHOD zzzyyy_if_app~main.
+  METHOD z2ui6_if_app~main.
     IF check_initialized = abap_false.
       check_initialized = abap_true.
 
@@ -24,10 +24,10 @@ CLASS ZZZYYY_CL_LP_SAMPLE_02 IMPLEMENTATION.
         client->message_box_display( `No Launchpad Active, Sample not working!` ).
       ENDIF.
 
-      DATA(shell) = zzzyyy_cl_xml_view=>factory( )->shell( ).
+      DATA(shell) = z2ui6_cl_xml_view=>factory( )->shell( ).
       IF client->get( )-check_launchpad_active = abap_true.
          DATA(page) = shell->page( showheader = abap_false  ).
-         page->_zzzyyy( )->lp_title( client->_bind_edit( mv_title ) ).
+         page->_z2ui6( )->lp_title( client->_bind_edit( mv_title ) ).
       ELSE.
          page = shell->page( title = client->_bind_edit( mv_title ) ).
       ENDIF.

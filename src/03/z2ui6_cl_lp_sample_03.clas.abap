@@ -1,8 +1,8 @@
-CLASS zzzyyy_cl_lp_sample_03 DEFINITION PUBLIC.
+CLASS z2ui6_cl_lp_sample_03 DEFINITION PUBLIC.
 
   PUBLIC SECTION.
 
-    INTERFACES zzzyyy_if_app.
+    INTERFACES z2ui6_if_app.
 
 *    DATA product  TYPE string.
 *    DATA quantity TYPE string.
@@ -20,10 +20,10 @@ ENDCLASS.
 
 
 
-CLASS zzzyyy_cl_lp_sample_03 IMPLEMENTATION.
+CLASS z2ui6_cl_lp_sample_03 IMPLEMENTATION.
 
 
-  METHOD zzzyyy_if_app~main.
+  METHOD z2ui6_if_app~main.
 
     DATA(lt_startup_params) = client->get( )-s_config-t_startup_params.
 
@@ -36,7 +36,7 @@ CLASS zzzyyy_cl_lp_sample_03 IMPLEMENTATION.
         client->message_box_display( `No Launchpad Active, Sample not working!` ).
       ENDIF.
 
-      DATA(view) = zzzyyy_cl_xml_view=>factory( ).
+      DATA(view) = z2ui6_cl_xml_view=>factory( ).
       client->view_display( view->shell(
             )->page(
                     showheader       = xsdbool( abap_false = client->get( )-check_launchpad_active )
@@ -59,7 +59,7 @@ CLASS zzzyyy_cl_lp_sample_03 IMPLEMENTATION.
                             press = client->_event_client(
             val    = client->cs_event-cross_app_nav_to_ext
             t_arg  = VALUE #(
-                ( `{ semanticObject: "ZZZYYY_CL_LP_SAMPLE_04",  action: "display" }` )
+                ( `{ semanticObject: "Z2UI6_CL_LP_SAMPLE_04",  action: "display" }` )
 *                ( `{ "Product" : "102343333" }` )
                 ( `$` && client->_bind_edit( nav_params ) )
                  )

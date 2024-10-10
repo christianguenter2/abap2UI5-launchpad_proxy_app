@@ -1,7 +1,7 @@
-CLASS zzzyyy_cl_lp_sample_01 DEFINITION PUBLIC.
+CLASS z2ui6_cl_lp_sample_01 DEFINITION PUBLIC.
 
   PUBLIC SECTION.
-    INTERFACES zzzyyy_if_app.
+    INTERFACES z2ui6_if_app.
 
     DATA check_initialized TYPE abap_bool.
 
@@ -10,8 +10,8 @@ CLASS zzzyyy_cl_lp_sample_01 DEFINITION PUBLIC.
 ENDCLASS.
 
 
-CLASS zzzyyy_cl_lp_sample_01 IMPLEMENTATION.
-  METHOD zzzyyy_if_app~main.
+CLASS z2ui6_cl_lp_sample_01 IMPLEMENTATION.
+  METHOD z2ui6_if_app~main.
     IF check_initialized = abap_false.
       check_initialized = abap_true.
 
@@ -19,7 +19,7 @@ CLASS zzzyyy_cl_lp_sample_01 IMPLEMENTATION.
         client->message_box_display( `No Launchpad Active, Sample not working!` ).
       ENDIF.
 
-      DATA(view) = zzzyyy_cl_xml_view=>factory( ).
+      DATA(view) = z2ui6_cl_xml_view=>factory( ).
       DATA(page) = view->shell( )->page( showheader = abap_false ).
       client->view_display( page->simple_form( title    = 'Laucnhpad I - Read Startup Parameters' editable = abap_true
                      )->content( 'form'

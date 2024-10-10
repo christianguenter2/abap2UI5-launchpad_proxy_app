@@ -2,13 +2,13 @@
 <abapGit version="v1.0.0" serializer="LCL_OBJECT_SICF" serializer_version="v1.0.0">
  <asx:abap xmlns:asx="http://www.sap.com/abapxml" version="1.0">
   <asx:values>
-   <URL>/sap/bc/bsp/sap/zzzyyy/</URL>
+   <URL>/sap/bc/bsp/sap/z2ui6/</URL>
    <ICFSERVICE>
-    <ICF_NAME>ZZZYYY</ICF_NAME>
-    <ORIG_NAME>zzzyyy</ORIG_NAME>
+    <ICF_NAME>Z2UI6</ICF_NAME>
+    <ORIG_NAME>z2ui6</ORIG_NAME>
    </ICFSERVICE>
    <ICFDOCU>
-    <ICF_NAME>ZZZYYY</ICF_NAME>
+    <ICF_NAME>Z2UI6</ICF_NAME>
     <ICF_LANGU>E</ICF_LANGU>
     <ICF_DOCU>test</ICF_DOCU>
    </ICFDOCU>
