@@ -2,13 +2,13 @@ const fs = require('fs');
 const path = require('path');
 const yaml = require('js-yaml');
 
-// Absoluter Pfad zur Konfigurationsdatei
+// Absolute path to the configuration file
 const configPath = path.join(__dirname, 'config.yaml');
 
-// Konfigurationsdatei einlesen
+// Read the configuration file
 const config = yaml.load(fs.readFileSync(configPath, 'utf8'));
 
-// Funktion zum rekursiven Löschen eines Verzeichnisses
+// Function to recursively delete a directory
 function deleteFolderRecursive(folderPath) {
     if (fs.existsSync(folderPath)) {
         fs.readdirSync(folderPath).forEach(file => {
@@ -23,17 +23,17 @@ function deleteFolderRecursive(folderPath) {
     }
 }
 
-// Funktion zum Kopieren, Umbenennen und Ersetzen von Inhalten in Dateien
+// Function to copy, rename, and replace content in files
 function copyAndRenameFiles(src, dest, callback) {
-    // Überprüfen, ob das Zielverzeichnis existiert, andernfalls erstellen
+    // Check if the destination directory exists, otherwise create it
     if (!fs.existsSync(dest)) {
         fs.mkdirSync(dest, { recursive: true });
     }
 
-    // Alle Dateien und Verzeichnisse im Quellverzeichnis lesen
+    // Read all files and directories in the source directory
     fs.readdir(src, (err, items) => {
         if (err) {
-            console.error('Fehler beim Lesen des Verzeichnisses:', err);
+            console.error('Error reading directory:', err);
             return;
         }
 
@@ -44,34 +44,34 @@ function copyAndRenameFiles(src, dest, callback) {
             const srcPath = path.join(src, item);
             const destPath = path.join(dest, item.replace(config.old_name, config.new_name));
 
-            // Überprüfen, ob die Datei ausgeschlossen werden soll
+            // Check if the file should be excluded
             const shouldExclude = config.exclude_patterns.some(pattern => item.includes(pattern)) && !item.endsWith('wapa.xml');
 
-            // Überprüfen, ob es sich um ein Verzeichnis handelt
+            // Check if it is a directory
             fs.stat(srcPath, (err, stats) => {
                 if (err) {
-                    console.error('Fehler beim Abrufen der Dateiinformationen:', err);
+                    console.error('Error getting file information:', err);
                     return;
                 }
 
                 if (stats.isDirectory()) {
-                    // Rekursiv für Unterverzeichnisse aufrufen
+                    // Recursively call for subdirectories
                     copyAndRenameFiles(srcPath, destPath, () => {
                         if (!--pending) callback();
                     });
                 } else {
-                    // Datei kopieren und umbenennen
+                    // Copy and rename file
                     fs.copyFile(srcPath, destPath, err => {
                         if (err) {
-                            console.error('Fehler beim Kopieren der Datei:', err);
+                            console.error('Error copying file:', err);
                             return;
                         }
 
                         if (!shouldExclude || item.endsWith('wapa.xml')) {
-                            // Inhalt ersetzen (sowohl in Klein- als auch in Großbuchstaben)
+                            // Replace content (both lowercase and uppercase)
                             fs.readFile(destPath, 'utf8', (err, data) => {
                                 if (err) {
-                                    console.error('Fehler beim Lesen der Datei:', err);
+                                    console.error('Error reading file:', err);
                                     return;
                                 }
 
@@ -79,18 +79,18 @@ function copyAndRenameFiles(src, dest, callback) {
                                     .replace(new RegExp(config.old_name, 'g'), config.new_name)
                                     .replace(new RegExp(config.old_name.toUpperCase(), 'g'), config.new_name.toUpperCase());
 
-                                // Datei im Zielverzeichnis speichern
+                                // Save file in the destination directory
                                 fs.writeFile(destPath, result, 'utf8', err => {
                                     if (err) {
-                                        console.error('Fehler beim Schreiben der Datei:', err);
+                                        console.error('Error writing file:', err);
                                     } else {
-                                        console.log(`Datei kopiert und Inhalt ersetzt: ${srcPath} -> ${destPath}`);
+                                        console.log(`File copied and content replaced: ${srcPath} -> ${destPath}`);
                                     }
                                     if (!--pending) callback();
                                 });
                             });
                         } else {
-                            console.log(`Datei kopiert ohne Inhalt zu ersetzen: ${srcPath} -> ${destPath}`);
+                            console.log(`File copied without replacing content: ${srcPath} -> ${destPath}`);
                             if (!--pending) callback();
                         }
                     });
@@ -100,7 +100,7 @@ function copyAndRenameFiles(src, dest, callback) {
     });
 }
 
-// Funktion zum Ersetzen des Inhalts aller Dateien, die mit manifest.json enden, im Ordner 02
+// Function to replace the content of all files ending with manifest.json in the 02 folder
 function updateManifestJsonFiles(dest) {
     const targetDir = path.join(dest, '02');
     if (fs.existsSync(targetDir)) {
@@ -111,7 +111,7 @@ function updateManifestJsonFiles(dest) {
             } else if (file.endsWith('manifest.json')) {
                 fs.readFile(curPath, 'utf8', (err, data) => {
                     if (err) {
-                        console.error('Fehler beim Lesen der manifest.json:', err);
+                        console.error('Error reading manifest.json:', err);
                         return;
                     }
 
@@ -119,9 +119,9 @@ function updateManifestJsonFiles(dest) {
 
                     fs.writeFile(curPath, result, 'utf8', err => {
                         if (err) {
-                            console.error('Fehler beim Schreiben der manifest.json:', err);
+                            console.error('Error writing manifest.json:', err);
                         } else {
-                            console.log(`manifest.json aktualisiert: ${curPath}`);
+                            console.log(`manifest.json updated: ${curPath}`);
                         }
                     });
                 });
@@ -130,19 +130,19 @@ function updateManifestJsonFiles(dest) {
     }
 }
 
-// Zielverzeichnis vor dem Kopieren leeren
+// Clear the destination directory before copying
 const destDir = path.resolve(__dirname, config.destination_path);
 deleteFolderRecursive(destDir);
 fs.mkdirSync(destDir, { recursive: true });
 
-// Skript für alle angegebenen Quellverzeichnisse ausführen
+// Execute the script for all specified source directories
 let pending = config.source_paths.length;
 config.source_paths.forEach(srcPath => {
     const srcDir = path.resolve(__dirname, srcPath);
     const destSubDir = path.join(destDir, path.basename(srcPath));
     copyAndRenameFiles(srcDir, destSubDir, () => {
         if (!--pending) {
-            // Alle Dateien, die mit manifest.json enden, im Ordner 02 aktualisieren
+            // Update all files ending with manifest.json in the 02 folder
             updateManifestJsonFiles(destDir);
         }
     });
