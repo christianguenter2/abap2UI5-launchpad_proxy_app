@@ -24,7 +24,7 @@ function deleteFolderRecursive(folderPath) {
 }
 
 // Funktion zum Kopieren, Umbenennen und Ersetzen von Inhalten in Dateien
-function copyAndRenameFiles(src, dest) {
+function copyAndRenameFiles(src, dest, callback) {
     // Überprüfen, ob das Zielverzeichnis existiert, andernfalls erstellen
     if (!fs.existsSync(dest)) {
         fs.mkdirSync(dest, { recursive: true });
@@ -36,6 +36,9 @@ function copyAndRenameFiles(src, dest) {
             console.error('Fehler beim Lesen des Verzeichnisses:', err);
             return;
         }
+
+        let pending = items.length;
+        if (!pending) return callback();
 
         items.forEach(item => {
             const srcPath = path.join(src, item);
@@ -53,7 +56,9 @@ function copyAndRenameFiles(src, dest) {
 
                 if (stats.isDirectory()) {
                     // Rekursiv für Unterverzeichnisse aufrufen
-                    copyAndRenameFiles(srcPath, destPath);
+                    copyAndRenameFiles(srcPath, destPath, () => {
+                        if (!--pending) callback();
+                    });
                 } else {
                     // Datei kopieren und umbenennen
                     fs.copyFile(srcPath, destPath, err => {
@@ -81,10 +86,12 @@ function copyAndRenameFiles(src, dest) {
                                     } else {
                                         console.log(`Datei kopiert und Inhalt ersetzt: ${srcPath} -> ${destPath}`);
                                     }
+                                    if (!--pending) callback();
                                 });
                             });
                         } else {
                             console.log(`Datei kopiert ohne Inhalt zu ersetzen: ${srcPath} -> ${destPath}`);
+                            if (!--pending) callback();
                         }
                     });
                 }
@@ -93,14 +100,50 @@ function copyAndRenameFiles(src, dest) {
     });
 }
 
+// Funktion zum Ersetzen des Inhalts aller Dateien, die mit manifest.json enden, im Ordner 02
+function updateManifestJsonFiles(dest) {
+    const targetDir = path.join(dest, '02');
+    if (fs.existsSync(targetDir)) {
+        fs.readdirSync(targetDir).forEach(file => {
+            const curPath = path.join(targetDir, file);
+            if (fs.lstatSync(curPath).isDirectory()) {
+                updateManifestJsonFiles(curPath);
+            } else if (file.endsWith('manifest.json')) {
+                fs.readFile(curPath, 'utf8', (err, data) => {
+                    if (err) {
+                        console.error('Fehler beim Lesen der manifest.json:', err);
+                        return;
+                    }
+
+                    const result = data.replace(new RegExp(`"uri": "/sap/bc/${config.old_name}"`, 'g'), `"uri": "/sap/bc/${config.new_name}"`);
+
+                    fs.writeFile(curPath, result, 'utf8', err => {
+                        if (err) {
+                            console.error('Fehler beim Schreiben der manifest.json:', err);
+                        } else {
+                            console.log(`manifest.json aktualisiert: ${curPath}`);
+                        }
+                    });
+                });
+            }
+        });
+    }
+}
+
 // Zielverzeichnis vor dem Kopieren leeren
 const destDir = path.resolve(__dirname, config.destination_path);
 deleteFolderRecursive(destDir);
 fs.mkdirSync(destDir, { recursive: true });
 
 // Skript für alle angegebenen Quellverzeichnisse ausführen
+let pending = config.source_paths.length;
 config.source_paths.forEach(srcPath => {
     const srcDir = path.resolve(__dirname, srcPath);
     const destSubDir = path.join(destDir, path.basename(srcPath));
-    copyAndRenameFiles(srcDir, destSubDir);
+    copyAndRenameFiles(srcDir, destSubDir, () => {
+        if (!--pending) {
+            // Alle Dateien, die mit manifest.json enden, im Ordner 02 aktualisieren
+            updateManifestJsonFiles(destDir);
+        }
+    });
 });
