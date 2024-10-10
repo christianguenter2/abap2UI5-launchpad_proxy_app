@@ -43,10 +43,6 @@ function copyAndRenameFiles(src, dest) {
 
             // Überprüfen, ob die Datei ausgeschlossen werden soll
             const shouldExclude = config.exclude_patterns.some(pattern => item.includes(pattern)) && !item.endsWith('wapa.xml');
-            if (shouldExclude) {
-                console.log(`Datei übersprungen: ${srcPath}`);
-                return;
-            }
 
             // Überprüfen, ob es sich um ein Verzeichnis handelt
             fs.stat(srcPath, (err, stats) => {
@@ -59,26 +55,37 @@ function copyAndRenameFiles(src, dest) {
                     // Rekursiv für Unterverzeichnisse aufrufen
                     copyAndRenameFiles(srcPath, destPath);
                 } else {
-                    // Datei kopieren, umbenennen und Inhalt ersetzen
-                    fs.readFile(srcPath, 'utf8', (err, data) => {
+                    // Datei kopieren und umbenennen
+                    fs.copyFile(srcPath, destPath, err => {
                         if (err) {
-                            console.error('Fehler beim Lesen der Datei:', err);
+                            console.error('Fehler beim Kopieren der Datei:', err);
                             return;
                         }
 
-                        // Inhalt ersetzen (sowohl in Klein- als auch in Großbuchstaben)
-                        const result = data
-                            .replace(new RegExp(config.old_name, 'g'), config.new_name)
-                            .replace(new RegExp(config.old_name.toUpperCase(), 'g'), config.new_name.toUpperCase());
+                        if (!shouldExclude || item.endsWith('wapa.xml')) {
+                            // Inhalt ersetzen (sowohl in Klein- als auch in Großbuchstaben)
+                            fs.readFile(destPath, 'utf8', (err, data) => {
+                                if (err) {
+                                    console.error('Fehler beim Lesen der Datei:', err);
+                                    return;
+                                }
 
-                        // Datei im Zielverzeichnis speichern
-                        fs.writeFile(destPath, result, 'utf8', err => {
-                            if (err) {
-                                console.error('Fehler beim Schreiben der Datei:', err);
-                            } else {
-                                console.log(`Datei kopiert und Inhalt ersetzt: ${srcPath} -> ${destPath}`);
-                            }
-                        });
+                                const result = data
+                                    .replace(new RegExp(config.old_name, 'g'), config.new_name)
+                                    .replace(new RegExp(config.old_name.toUpperCase(), 'g'), config.new_name.toUpperCase());
+
+                                // Datei im Zielverzeichnis speichern
+                                fs.writeFile(destPath, result, 'utf8', err => {
+                                    if (err) {
+                                        console.error('Fehler beim Schreiben der Datei:', err);
+                                    } else {
+                                        console.log(`Datei kopiert und Inhalt ersetzt: ${srcPath} -> ${destPath}`);
+                                    }
+                                });
+                            });
+                        } else {
+                            console.log(`Datei kopiert ohne Inhalt zu ersetzen: ${srcPath} -> ${destPath}`);
+                        }
                     });
                 }
             });
