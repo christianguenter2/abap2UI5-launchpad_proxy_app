@@ -1,0 +1,10 @@
+# config.yaml
+old_name: z2ui5
+new_name: zzzyyy
+source_paths:
+  - ../src/01
+  - ../src/02
+  - ../src/03
+destination_path: ../dest
+exclude_patterns:
+  - wapa
